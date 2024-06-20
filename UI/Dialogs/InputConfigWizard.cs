@@ -61,7 +61,8 @@ namespace MobiFlight.UI.Dialogs
                              Dictionary<string, ArcazeModuleSettings> moduleSettings,
 #endif
                              DataSet dataSetConfig,
-                             String filterGuid)
+                             String filterGuid,
+                             String description)
         {
             Init(mainForm, cfg);
 #if ARCAZE
@@ -85,6 +86,12 @@ namespace MobiFlight.UI.Dialogs
             ScanForInputButtonDefaultStyle.BackColor = ScanForInputButton.BackColor;
             ScanForInputButtonDefaultStyle.ForeColor = ScanForInputButton.ForeColor;
             ScanForInputButtonDefaultStyle.BorderColor = ScanForInputButton.FlatAppearance.BorderColor;
+
+            // Append the row description to the window title if one was provided.
+            if (!String.IsNullOrEmpty(description))
+            {
+                this.Text = $"{this.Text} - {description}";
+            }
         }
 
         private void initConfigRefDropDowns(DataSet dataSetConfig, string filterGuid)
@@ -830,13 +837,13 @@ namespace MobiFlight.UI.Dialogs
             else if (SerialNumber.IsMidiBoardSerial(e.Serial))
             {
                 // Add item to device list if not yet there
-                if (!inputTypeComboBox.Items.OfType<ListItem<MidiBoardDevice>>().Any(i => i.Value.Name == e.DeviceId))
+                if (!inputTypeComboBox.Items.OfType<ListItem<IBaseDevice>>().Any(i => i.Value.Name == e.DeviceId))
                 { 
                     MidiBoardDevice mbd = new MidiBoardDevice();
                     mbd.Label = e.DeviceLabel;  
                     mbd.Name = e.DeviceId;
                     mbd.Type = DeviceType.Button;
-                    inputTypeComboBox.Items.Add(new ListItem<MidiBoardDevice> { Label = mbd.Label, Value = mbd });
+                    inputTypeComboBox.Items.Add(new ListItem<IBaseDevice> { Label = mbd.Label, Value = mbd });
                 }                        
                 ComboBoxHelper.SetSelectedItem(inputTypeComboBox, e.DeviceLabel);
             }
